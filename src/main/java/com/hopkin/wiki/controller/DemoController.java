@@ -1,6 +1,7 @@
 package com.hopkin.wiki.controller;
 
 import com.hopkin.wiki.domain.Demo;
+import com.hopkin.wiki.resp.CommonResp;
 import com.hopkin.wiki.service.DemoService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +29,10 @@ public class DemoController {
     }
 
     @GetMapping("/list")
-    public List<Demo> list(){
-        System.out.println("list");
-        return demoService.list();
+    public CommonResp list(){
+        CommonResp<List<Demo>> resp =  new CommonResp<>();
+        List<Demo> list = demoService.list();
+        resp.setContent(list);
+        return resp;
     }
 }

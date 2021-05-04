@@ -1,6 +1,7 @@
 package com.hopkin.wiki.controller;
 
 import com.hopkin.wiki.domain.Ebook;
+import com.hopkin.wiki.resp.CommonResp;
 import com.hopkin.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +29,10 @@ public class EbookController {
     }
 
     @GetMapping("/list")
-    public List<Ebook> list(){
-        System.out.println("list");
-        return ebookService.list();
+    public CommonResp list(){
+        CommonResp<List<Ebook>> resp =  new CommonResp<>();
+        List<Ebook> list = ebookService.list();
+        resp.setContent(list);
+        return resp;
     }
 }
