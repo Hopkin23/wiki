@@ -1,8 +1,8 @@
 package com.hopkin.wiki.controller;
 
-import com.hopkin.wiki.domain.Ebook;
 import com.hopkin.wiki.req.EbookReq;
 import com.hopkin.wiki.resp.CommonResp;
+import com.hopkin.wiki.resp.EbookResp;
 import com.hopkin.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,8 +31,8 @@ public class EbookController {
 
     @GetMapping("/list")
     public CommonResp list(EbookReq req){
-        CommonResp<List<Ebook>> resp =  new CommonResp<>();
-        List<Ebook> list = ebookService.list(req);
+        CommonResp<List<EbookResp>> resp =  new CommonResp<>();
+        List<EbookResp> list = ebookService.list(req);
         resp.setContent(list);
         return resp;
     }
