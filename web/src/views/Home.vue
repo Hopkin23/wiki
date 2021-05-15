@@ -108,7 +108,7 @@
 
             onMounted(()=>{
                 console.log("onMounted");
-                axios.get(process.env.VUE_APP_SERVER+"/ebook/list").then((response) => {
+                axios.get("/ebook/list").then((response) => {
                     const data = response.data;
                     ebooks.value = data.content;
                     console.log(response);
