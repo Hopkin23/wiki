@@ -111,7 +111,6 @@
                 axios.get("/ebook/list").then((response) => {
                     const data = response.data;
                     ebooks.value = data.content;
-                    console.log(response);
                 })
             })
 
