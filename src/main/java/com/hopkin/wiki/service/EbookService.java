@@ -8,6 +8,7 @@ import com.hopkin.wiki.domain.EbookExample;
 import com.hopkin.wiki.mapper.EbookMapper;
 import com.hopkin.wiki.req.EbookReq;
 import com.hopkin.wiki.resp.EbookResp;
+import com.hopkin.wiki.resp.PageResp;
 import com.hopkin.wiki.utils.CopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +25,9 @@ public class EbookService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EbookService.class);
 
-    public List<EbookResp> list(EbookReq req){
+    public PageResp list(EbookReq req){
         //PageHelper分页
-        PageHelper.startPage(1,3);
+        PageHelper.startPage(req.getPage(), req.getSize());
 
         //以下两行为生成Example的固定代码
         EbookExample ebookExample = new EbookExample();
@@ -41,8 +42,12 @@ public class EbookService {
         List<EbookResp> resp = CopyUtil.copyList(ebookList, EbookResp.class);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
-        LOG.info("总行数：{}", pageInfo.getTotal());
-        LOG.info("总页数：{}", pageInfo.getPages());
-        return resp;
+        //LOG.info("总行数：{}", pageInfo.getTotal());
+        //LOG.info("总页数：{}", pageInfo.getPages());
+
+        PageResp<EbookResp> objectPageResp = new PageResp<>();
+        objectPageResp.setTotal(pageInfo.getTotal());
+        objectPageResp.setList(resp);
+        return objectPageResp;
     }
 }

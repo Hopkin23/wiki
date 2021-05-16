@@ -1,6 +1,6 @@
 package com.hopkin.wiki.req;
 
-public class EbookReq {
+public class EbookReq extends PageReq{
 
     private String name;
 
