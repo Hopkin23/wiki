@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts">
-    import {defineComponent, ref} from 'vue';
+    import {defineComponent, onMounted, ref} from 'vue';
     import axios from "axios";
 
     export default defineComponent({
@@ -47,7 +47,7 @@
             //分页
             const pagination = ref({
                 current: 1, //当前页
-                pageSize: 2, //每页分页条数
+                pageSize: 4, //每页分页条数
                 total: 0
             });
             //等待框
@@ -95,13 +95,19 @@
              **/
             const handleQuery = (params: any) => {
                 loading.value = true;
-                axios.get("/ebook/list", params).then((response) => {
+                axios.get("/ebook/list", {
+                    params: {
+                        page: params.page,
+                        size: params.size
+                    }
+                }).then((response) => {
                     loading.value = false;
                     const data = response.data;
                     ebooks.value = data.content.list;
 
                     // 重置分页按钮
                     pagination.value.current = params.page;
+                    pagination.value.total = data.content.total
                 });
             };
 
@@ -115,6 +121,13 @@
                     size: pagination.pageSize
                 });
             };
+
+            onMounted(() => {
+                handleQuery({
+                    page: 1,
+                    size: pagination.value.pageSize
+                });
+            });
 
             return {
                 ebooks,
