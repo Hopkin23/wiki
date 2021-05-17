@@ -1,7 +1,6 @@
-package com.hopkin.wiki.resp;
+package com.hopkin.wiki.req;
 
-public class EbookResp {
-    private Long id;
+public class EbookQueryReq extends PageReq{
 
     private String name;
 
@@ -19,13 +18,6 @@ public class EbookResp {
 
     private Integer voteCount;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -97,7 +89,6 @@ public class EbookResp {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
         sb.append(", name=").append(name);
         sb.append(", category1Id=").append(category1Id);
         sb.append(", category2Id=").append(category2Id);

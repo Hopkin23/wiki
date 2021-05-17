@@ -6,8 +6,9 @@ import com.github.pagehelper.PageInfo;
 import com.hopkin.wiki.domain.Ebook;
 import com.hopkin.wiki.domain.EbookExample;
 import com.hopkin.wiki.mapper.EbookMapper;
-import com.hopkin.wiki.req.EbookReq;
-import com.hopkin.wiki.resp.EbookResp;
+import com.hopkin.wiki.req.EbookQueryReq;
+import com.hopkin.wiki.req.EbookSaveReq;
+import com.hopkin.wiki.resp.EbookQueryResp;
 import com.hopkin.wiki.resp.PageResp;
 import com.hopkin.wiki.utils.CopyUtil;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public class EbookService {
 
     private static final Logger LOG = LoggerFactory.getLogger(EbookService.class);
 
-    public PageResp list(EbookReq req){
+    public PageResp list(EbookQueryReq req){
         //PageHelper分页
         PageHelper.startPage(req.getPage(), req.getSize());
 
@@ -39,15 +40,29 @@ public class EbookService {
         }
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
         //CopyUtil工具类 列表复制
-        List<EbookResp> resp = CopyUtil.copyList(ebookList, EbookResp.class);
+        List<EbookQueryResp> resp = CopyUtil.copyList(ebookList, EbookQueryResp.class);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
         //LOG.info("总行数：{}", pageInfo.getTotal());
         //LOG.info("总页数：{}", pageInfo.getPages());
 
-        PageResp<EbookResp> objectPageResp = new PageResp<>();
+        PageResp<EbookQueryResp> objectPageResp = new PageResp<>();
         objectPageResp.setTotal(pageInfo.getTotal());
         objectPageResp.setList(resp);
         return objectPageResp;
+    }
+
+    /**
+     * 保存,支持新增和更新
+     */
+    public void save(EbookSaveReq req) {
+        Ebook ebook = CopyUtil.copy(req, Ebook.class);
+        if(ObjectUtils.isEmpty(req.getId())){
+            //新增
+            ebookMapper.insert(ebook);
+        }else {
+            //更新
+            ebookMapper.updateByPrimaryKey(ebook);
+        }
     }
 }

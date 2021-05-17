@@ -1,14 +1,12 @@
 package com.hopkin.wiki.controller;
 
-import com.hopkin.wiki.req.EbookReq;
+import com.hopkin.wiki.req.EbookQueryReq;
+import com.hopkin.wiki.req.EbookSaveReq;
 import com.hopkin.wiki.resp.CommonResp;
 import com.hopkin.wiki.resp.PageResp;
 import com.hopkin.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -23,13 +21,14 @@ public class EbookController {
     @Resource
     private EbookService ebookService;
 
-    @PostMapping("/post")
-    public String helloPost(String name){
-        return "Hello World! Post."+name;
+    @PostMapping("/save")
+    public CommonResp save(@RequestBody EbookSaveReq req){
+        CommonResp resp =  new CommonResp<>();
+        ebookService.save(req);
+        return resp;
     }
-
     @GetMapping("/list")
-    public CommonResp list(EbookReq req){
+    public CommonResp list(EbookQueryReq req){
         CommonResp<PageResp> resp =  new CommonResp<>();
         PageResp list = ebookService.list(req);
         resp.setContent(list);

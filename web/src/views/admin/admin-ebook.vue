@@ -92,11 +92,11 @@
                 },
                 {
                     title: '分类一',
-                    key: 'categoty1Id'
+                    dataIndex: 'category1Id'
                 },
                 {
                     title: '分类二',
-                    key: 'categoty2Id'
+                    dataIndex: 'category2Id'
                 },
                 {
                     title: '文档数',
@@ -122,6 +122,7 @@
              **/
             const handleQuery = (params: any) => {
                 loading.value = true;
+                ebooks.value = [];
                 axios.get("/ebook/list", {
                     params: {
                         page: params.page,
@@ -155,10 +156,20 @@
             const modalLoading = ref(false);
             const handleModalOk = () => {
                 modalLoading.value = true;
-                setTimeout(() => {
-                    modalVisible.value = false;
-                    modalLoading.value = false;
-                }, 2000)
+
+                axios.post("/ebook/save", ebook.value).then((response) => {
+                    const data = response.data;
+                    if (data.success){
+                        modalVisible.value = false;
+                        modalLoading.value = false;
+
+                        // 重写加载当前页列表
+                        handleQuery({
+                            page: 1,
+                            size: pagination.value.pageSize
+                        });
+                    }
+                });
             };
 
             /**
@@ -196,3 +207,10 @@
         }
     })
 </script>
+
+<style scoped>
+    img {
+        width: 50px;
+        height: 50px;
+    }
+</style>
