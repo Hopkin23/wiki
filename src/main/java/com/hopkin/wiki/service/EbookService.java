@@ -37,7 +37,7 @@ public class EbookService {
         //以下两行为生成Example的固定代码
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
-        //动态SQL
+        //动态SQL 按名称查询
         if(!ObjectUtils.isEmpty(req.getName())){
             //模糊查询
             criteria.andNameLike("%"+req.getName()+"%");

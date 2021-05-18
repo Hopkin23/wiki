@@ -4,9 +4,22 @@
                 :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
         >
             <p>
-                <a-button type="primary" @click="add()" size="large">
-                    新增
-                </a-button>`
+                <a-form layout="inline" :model="param">
+                    <a-form-item>
+                        <a-input v-model:value="param.name" placeholder="名称">
+                        </a-input>
+                    </a-form-item>
+                    <a-form-item>
+                        <a-button type="primary" @click="handleQuery({page: 1, size: pagination.pageSize})">
+                            查询
+                        </a-button>
+                    </a-form-item>
+                    <a-form-item>
+                        <a-button type="primary" @click="add()">
+                            新增
+                        </a-button>
+                    </a-form-item>
+                </a-form>
             </p>
 
             <a-table
@@ -80,6 +93,10 @@
         components: {
         },
         setup() {
+            // 查询框内信息
+            const param = ref();
+            param.value = {};
+
             const ebooks = ref();
             //分页
             const pagination = ref({
@@ -136,7 +153,8 @@
                 axios.get("/ebook/list", {
                     params: {
                         page: params.page,
-                        size: params.size
+                        size: params.size,
+                        name: param.value.name
                     }
                 }).then((response) => {
                     loading.value = false;
@@ -226,11 +244,13 @@
 
             return {
                 // 表格
+                param,
                 ebooks,
                 pagination,
                 columns,
                 loading,
                 handleTableChange,
+                handleQuery, // 内部函数调用无需return html界面调用需要return
 
                 edit,
                 add,
