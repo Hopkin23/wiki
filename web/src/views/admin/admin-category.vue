@@ -21,7 +21,7 @@
             <a-table
                     :columns="columns"
                     :row-key="record => record.id"
-                    :data-source="categorys"
+                    :data-source="level1"
                     :pagination="false"
                     :loading="loading">
                 <!--渲染封面图片-->
@@ -111,6 +111,20 @@
             ];
 
             /**
+             * 一级分类树，children属性就是二级分类
+             * [{
+             *   id: "",
+             *   name: "",
+             *   children: [{
+             *     id: "",
+             *     name: "",
+             *   }]
+             * }]
+             */
+            const level1 = ref(); // 一级分类树，children属性就是二级分类
+            level1.value = [];
+
+            /**
              * 数据查询
              **/
             const handleQuery = () => {
@@ -121,6 +135,11 @@
                     const data = response.data;
                     if (data.success) {
                         categorys.value = data.content;
+                        console.log("原始数组：", categorys.value);
+
+                        level1.value = [];
+                        level1.value = Tool.array2Tree(categorys.value, 0);
+                        console.log("树形结构：", level1);
                     } else {
                         message.error(data.message);
                     }
@@ -184,7 +203,8 @@
 
             return {
                 // 表格
-                categorys,
+                // categorys, categorys只是在内部调用
+                level1,
                 columns,
                 loading,
                 handleQuery, // 内部函数调用无需return html界面调用需要return
