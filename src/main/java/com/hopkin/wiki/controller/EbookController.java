@@ -27,11 +27,19 @@ public class EbookController {
         ebookService.save(req);
         return resp;
     }
+
     @GetMapping("/list")
     public CommonResp list(EbookQueryReq req){
         CommonResp<PageResp> resp =  new CommonResp<>();
         PageResp list = ebookService.list(req);
         resp.setContent(list);
+        return resp;
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public CommonResp delete(@PathVariable Long id){
+        CommonResp resp =  new CommonResp<>();
+        ebookService.delete(id);
         return resp;
     }
 }
