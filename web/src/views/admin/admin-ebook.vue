@@ -169,10 +169,10 @@
             const modalLoading = ref(false);
             const handleModalOk = () => {
                 modalLoading.value = true;
-
                 axios.post("/ebook/save", ebook.value).then((response) => {
+                    modalLoading.value = false;// 只要后端有返回就不必loading
                     const data = response.data;
-                    if (data.success){
+                    if (data.success) {
                         modalVisible.value = false;
                         modalLoading.value = false;
 
@@ -181,6 +181,8 @@
                             page: pagination.value.current,
                             size: pagination.value.pageSize
                         });
+                    } else {
+                        message.error(data.message);
                     }
                 });
             };
