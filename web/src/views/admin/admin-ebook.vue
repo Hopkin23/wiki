@@ -222,6 +222,9 @@
                 ebook.value = {};//清空
             };
 
+            /**
+             * 删除函数
+             */
             const handleDelete = (id: string) => {
                 axios.delete("/ebook/delete/"+id).then((response) => {
                     const data = response.data;

@@ -4,13 +4,9 @@
                 :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
         >
             <p>
-                <a-form layout="inline" :model="param">
+                <a-form layout="inline">
                     <a-form-item>
-                        <a-input v-model:value="param.name" placeholder="名称">
-                        </a-input>
-                    </a-form-item>
-                    <a-form-item>
-                        <a-button type="primary" @click="handleQuery({page: 1, size: pagination.pageSize})">
+                        <a-button type="primary" @click="handleQuery()">
                             查询
                         </a-button>
                     </a-form-item>
@@ -26,9 +22,8 @@
                     :columns="columns"
                     :row-key="record => record.id"
                     :data-source="categorys"
-                    :pagination="pagination"
-                    :loading="loading"
-                    @change="handleTableChange">
+                    :pagination="false"
+                    :loading="loading">
                 <!--渲染封面图片-->
                 <template #cover="{ text: cover }">
                     <img v-if="cover" :src="cover" alt="avatar" />
@@ -67,17 +62,7 @@
                 <a-input v-model:value="category.name" />
             </a-form-item>
             <a-form-item label="父分类">
-                <a-select
-                        v-model:value="category.parent"
-                        ref="select"
-                >
-                    <a-select-option :value="0">
-                        无
-                    </a-select-option>
-                    <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id">
-                        {{c.name}}
-                    </a-select-option>
-                </a-select>
+                <a-input v-model:value="category.parent" />
             </a-form-item>
             <a-form-item label="顺序">
                 <a-input v-model:value="category.sort" />
@@ -99,49 +84,24 @@
         components: {
         },
         setup() {
-            // 查询框内信息
-            const param = ref();
-            param.value = {};
-
             const categorys = ref();
-            //分页
-            const pagination = ref({
-                current: 1, //当前页
-                pageSize: 6, //每页分页条数
-                total: 0
-            });
+
             //等待框
             const loading = ref(false);
             // 定义列
             const columns = [
                 {
-                    title: '封面',
-                    dataIndex: 'cover',
-                    slots: { customRender: 'cover' }
-                },
-                {
                     title: '名称',
                     dataIndex: 'name'
                 },
                 {
-                    title: '分类一',
-                    dataIndex: 'category1Id'
+                  title: '父分类',
+                  key: 'parent',
+                  dataIndex: 'parent'
                 },
                 {
-                    title: '分类二',
-                    dataIndex: 'category2Id'
-                },
-                {
-                    title: '文档数',
-                    dataIndex: 'docCount'
-                },
-                {
-                    title: '阅读数',
-                    dataIndex: 'viewCount'
-                },
-                {
-                    title: '点赞数',
-                    dataIndex: 'voteCount'
+                    title: '顺序',
+                    dataIndex: 'sort'
                 },
                 {
                     title: 'Action',
@@ -153,37 +113,17 @@
             /**
              * 数据查询
              **/
-            const handleQuery = (params: any) => {
+            const handleQuery = () => {
                 loading.value = true;
                 categorys.value = [];
-                axios.get("/category/list", {
-                    params: {
-                        page: params.page,
-                        size: params.size,
-                        name: param.value.name
-                    }
-                }).then((response) => {
+                axios.get("/category/all").then((response) => {
                     loading.value = false;
                     const data = response.data;
                     if (data.success) {
-                        categorys.value = data.content.list;
-                        // 重置分页按钮
-                        pagination.value.current = params.page;
-                        pagination.value.total = data.content.total
+                        categorys.value = data.content;
                     } else {
                         message.error(data.message);
                     }
-                });
-            };
-
-            /**
-             * 表格点击页码时触发
-             */
-            const handleTableChange = (pagination: any) => {
-                console.log("看看自带的分页参数都有啥：" + pagination);
-                handleQuery({
-                    page: pagination.current,
-                    size: pagination.pageSize
                 });
             };
 
@@ -201,10 +141,7 @@
                         modalLoading.value = false;
 
                         // 重写加载当前页列表
-                        handleQuery({
-                            page: pagination.value.current,
-                            size: pagination.value.pageSize
-                        });
+                        handleQuery();
                     } else {
                         message.error(data.message);
                     }
@@ -227,35 +164,29 @@
                 category.value = {};//清空
             };
 
+            /**
+             * 删除函数
+             */
             const handleDelete = (id: string) => {
                 axios.delete("/category/delete/"+id).then((response) => {
                     const data = response.data;
                     if (data.success){
                         // 重写加载当前页列表
-                        handleQuery({
-                            page: pagination.value.current,
-                            size: pagination.value.pageSize
-                        });
+                        handleQuery();
                     }
                 });
             }
             // --------    ---------
 
             onMounted(() => {
-                handleQuery({
-                    page: 1,
-                    size: pagination.value.pageSize
-                });
+                handleQuery();
             });
 
             return {
                 // 表格
-                param,
                 categorys,
-                pagination,
                 columns,
                 loading,
-                handleTableChange,
                 handleQuery, // 内部函数调用无需return html界面调用需要return
 
                 edit,

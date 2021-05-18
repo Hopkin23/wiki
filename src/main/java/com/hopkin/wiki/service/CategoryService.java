@@ -30,13 +30,26 @@ public class CategoryService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CategoryService.class);
 
+    /**
+     *  查询所有数据不分页
+     */
+    public List<CategoryQueryResp> all() {
+        //以下两行为生成Example的固定代码
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort asc");
+        List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
+
+        // 列表复制
+        List<CategoryQueryResp> list = CopyUtil.copyList(categoryList, CategoryQueryResp.class);
+        return list;
+    }
+
     public PageResp list(CategoryQueryReq req){
         //PageHelper分页
         PageHelper.startPage(req.getPage(), req.getSize());
 
         //以下两行为生成Example的固定代码
         CategoryExample categoryExample = new CategoryExample();
-        CategoryExample.Criteria criteria = categoryExample.createCriteria();
 
         List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
         //CopyUtil工具类 列表复制
@@ -75,4 +88,5 @@ public class CategoryService {
     public void delete(Long id) {
         categoryMapper.deleteByPrimaryKey(id);
     }
+
 }
