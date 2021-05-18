@@ -25,7 +25,7 @@
             <a-table
                     :columns="columns"
                     :row-key="record => record.id"
-                    :data-source="ebooks"
+                    :data-source="categorys"
                     :pagination="pagination"
                     :loading="loading"
                     @change="handleTableChange">
@@ -55,27 +55,32 @@
         </a-layout-content>
     </a-layout>
 
+    <!--  对话框内部套表单  -->
     <a-modal
-            title="电子书表单"
+            title="分类表单"
             v-model:visible="modalVisible"
             :confirm-loading="modalLoading"
             @ok="handleModalOk"
     >
-        <a-form :model="ebook" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
-            <a-form-item label="封面">
-                <a-input v-model:value="ebook.cover" />
-            </a-form-item>
+        <a-form :model="category" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }">
             <a-form-item label="名称">
-                <a-input v-model:value="ebook.name" />
+                <a-input v-model:value="category.name" />
             </a-form-item>
-            <a-form-item label="分类一">
-                <a-input v-model:value="ebook.category1Id" />
+            <a-form-item label="父分类">
+                <a-select
+                        v-model:value="category.parent"
+                        ref="select"
+                >
+                    <a-select-option :value="0">
+                        无
+                    </a-select-option>
+                    <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id">
+                        {{c.name}}
+                    </a-select-option>
+                </a-select>
             </a-form-item>
-            <a-form-item label="分类二">
-                <a-input v-model:value="ebook.category2Id" />
-            </a-form-item>
-            <a-form-item label="描述">
-                <a-input v-model:value="ebook.description" type="textarea" />
+            <a-form-item label="顺序">
+                <a-input v-model:value="category.sort" />
             </a-form-item>
         </a-form>
     </a-modal>
@@ -90,7 +95,7 @@
     import {Tool} from "@/util/tool";
 
     export default defineComponent({
-        name: 'AdminEbook',
+        name: 'AdminCategory',
         components: {
         },
         setup() {
@@ -98,7 +103,7 @@
             const param = ref();
             param.value = {};
 
-            const ebooks = ref();
+            const categorys = ref();
             //分页
             const pagination = ref({
                 current: 1, //当前页
@@ -150,8 +155,8 @@
              **/
             const handleQuery = (params: any) => {
                 loading.value = true;
-                ebooks.value = [];
-                axios.get("/ebook/list", {
+                categorys.value = [];
+                axios.get("/category/list", {
                     params: {
                         page: params.page,
                         size: params.size,
@@ -161,7 +166,7 @@
                     loading.value = false;
                     const data = response.data;
                     if (data.success) {
-                        ebooks.value = data.content.list;
+                        categorys.value = data.content.list;
                         // 重置分页按钮
                         pagination.value.current = params.page;
                         pagination.value.total = data.content.total
@@ -183,12 +188,12 @@
             };
 
             // -------- 表单 ---------
-            const ebook = ref();
+            const category = ref();
             const modalVisible = ref(false);
             const modalLoading = ref(false);
             const handleModalOk = () => {
                 modalLoading.value = true;
-                axios.post("/ebook/save", ebook.value).then((response) => {
+                axios.post("/category/save", category.value).then((response) => {
                     modalLoading.value = false;// 只要后端有返回就不必loading
                     const data = response.data;
                     if (data.success) {
@@ -211,7 +216,7 @@
              */
             const edit = (record: any) => {
                 modalVisible.value = true;
-                ebook.value =  Tool.copy(record);
+                category.value =  Tool.copy(record);
             };
 
             /**
@@ -219,11 +224,11 @@
              */
             const add = () => {
                 modalVisible.value = true;
-                ebook.value = {};//清空
+                category.value = {};//清空
             };
 
             const handleDelete = (id: string) => {
-                axios.delete("/ebook/delete/"+id).then((response) => {
+                axios.delete("/category/delete/"+id).then((response) => {
                     const data = response.data;
                     if (data.success){
                         // 重写加载当前页列表
@@ -246,7 +251,7 @@
             return {
                 // 表格
                 param,
-                ebooks,
+                categorys,
                 pagination,
                 columns,
                 loading,
@@ -257,7 +262,7 @@
                 add,
 
                 //表单
-                ebook,
+                category,
                 modalVisible,
                 modalLoading,
                 handleModalOk,
