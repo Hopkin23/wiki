@@ -11,6 +11,7 @@ import com.hopkin.wiki.req.EbookSaveReq;
 import com.hopkin.wiki.resp.EbookQueryResp;
 import com.hopkin.wiki.resp.PageResp;
 import com.hopkin.wiki.utils.CopyUtil;
+import com.hopkin.wiki.utils.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ import java.util.List;
 public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
+
+    @Resource
+    private SnowFlake snowFlake;
 
     private static final Logger LOG = LoggerFactory.getLogger(EbookService.class);
 
@@ -59,9 +63,12 @@ public class EbookService {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if(ObjectUtils.isEmpty(req.getId())){
             //新增
-            ebookMapper.insert(ebook);
+            ebook.setId(snowFlake.nextId());
+            ebookMapper.insertSelective(ebook);
         }else {
             //更新
+            Ebook ebook1 = ebookMapper.selectByPrimaryKey(req.getId());
+            LOG.info("id查找记录{}",ebook1);
             ebookMapper.updateByPrimaryKey(ebook);
         }
     }

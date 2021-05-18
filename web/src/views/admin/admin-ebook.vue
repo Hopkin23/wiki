@@ -3,9 +3,11 @@
         <a-layout-content
                 :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
         >
-            <div class="about">
-                <h1>电子书管理</h1>
-            </div>
+            <p>
+                <a-button type="primary" @click="add()" size="large">
+                    新增
+                </a-button>`
+            </p>
 
             <a-table
                     :columns="columns"
@@ -165,7 +167,7 @@
 
                         // 重写加载当前页列表
                         handleQuery({
-                            page: 1,
+                            page: pagination.value.current,
                             size: pagination.value.pageSize
                         });
                     }
@@ -180,6 +182,14 @@
                 ebook.value = record
             };
 
+            /**
+             * 新增
+             */
+            const add = () => {
+                modalVisible.value = true;
+                ebook.value = {};//清空
+            };
+
             // --------    ---------
 
             onMounted(() => {
@@ -190,6 +200,7 @@
             });
 
             return {
+                // 表格
                 ebooks,
                 pagination,
                 columns,
@@ -197,7 +208,9 @@
                 handleTableChange,
 
                 edit,
+                add,
 
+                //表单
                 ebook,
                 modalVisible,
                 modalLoading,
